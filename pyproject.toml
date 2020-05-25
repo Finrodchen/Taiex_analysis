@@ -1,0 +1,18 @@
+[build-system]
+build-backend = "poetry.masonry.api"
+requires = ["poetry>=0.12"]
+
+[tool]
+[tool.poetry]
+authors = ["Your Name <you@example.com>"]
+description = ""
+name = "snoopyunfortunateellipse"
+version = "0.1.0"
+[tool.poetry.dependencies]
+python = "^3.7"
+twstock = "^1.3"
+lxml = "^4.5"
+pandas = "^1.0"
+mpl-finance = "^0.10.1"
+matplotlib = "^3.2"
+[tool.poetry.dev-dependencies]
