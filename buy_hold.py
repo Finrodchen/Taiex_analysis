@@ -78,5 +78,5 @@ print('投資 > 起始資產 %.2f 💲' % cerebro.broker.getvalue())
 cerebro.run()
 print('投資 > 結束資產 %.2f 💲' % cerebro.broker.getvalue())
 
-b = Bokeh(style='bar', plot_mode='single', scheme=Blackly())
-cerebro.plot(b)
+investment_plot = Bokeh(style='bar', plot_mode='single', scheme=Blackly())
+cerebro.plot(investment_plot)
