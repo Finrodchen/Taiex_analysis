@@ -5,9 +5,9 @@ import backtrader.feeds as btfeeds
 from backtrader_plotting import Bokeh
 from backtrader_plotting.schemes import Blackly
 
-class BuyBuyBuy(bt.Strategy):
+class Buy_and_Hold(bt.Strategy):
   def log(self, txt, dt=None):
-    ''' 買買買 策略 '''
+    '''Buy and Hold'''
     dt = dt or self.datas[0].datetime.date(0)
     print(f'{dt.isoformat()}, {txt}')
 
@@ -40,39 +40,40 @@ class BuyBuyBuy(bt.Strategy):
         # 昨日收盤價 < 前日收盤價
         if self.dataclose[-1] < self.dataclose[-2]:
           self.log(f'購買信號, {self.dataclose[0]}')
-          self.order = self.buy()
+          self.order = self.buy(size=1000)
     
     else:
       if len(self) >= (self.bar_executed + 5):
         self.log(f'賣出信號 {self.dataclose[0]}')
-        self.order = self.sell()
+        self.order = self.sell(size=1000)
 
-target_stock = '4142'
+target_stock = '0056.TW'
 
 cerebro = bt.Cerebro()
 
-cerebro.broker.setcash(1e5)
-cerebro.broker.setcommission(commission=0.001)
+cerebro.broker.setcash(1e6)
+cerebro.broker.setcommission(commission=0.0025)
 
 data = bt.feeds.GenericCSVData(
   dataname=f'./data/{target_stock}.csv',
-  fromedate=datetime(2020, 1, 1),
-  todate=datetime(2020, 5, 1),
   nullvalue=0.0,
   dtformat=('%Y-%m-%d'),
-  datetime=1,
-  high=5,
-  low=6,
-  open=4,
-  close=7,
-  volume=3,
+  datetime=0,
+  open=1,
+  high=2,
+  low=3,
+  close=4,
+  volume=6,
   )
 
 cerebro.adddata(data)
-cerebro.addstrategy(BuyBuyBuy)
-# cerebro.addstrategy(BuyBuyBuy)
+cerebro.addstrategy(Buy_and_Hold)
 
-cerebro.addanalyzer(btanalyzers.PositionsValue, _name='PositionsValue')
+cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer') # 交易分析 (策略勝率)
+cerebro.addanalyzer(bt.analyzers.PeriodStats, _name='PeriodStats') # 交易基本統計分析
+cerebro.addanalyzer(bt.analyzers.DrawDown, _name='DrawDown') # 回落統計
+cerebro.addanalyzer(bt.analyzers.SQN, _name='SQN') # 期望獲利/標準差 System Quality Number
+cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='SharpeRatio') # 夏普指數 
 
 print('投資 > 起始資產 %.2f 💲' % cerebro.broker.getvalue())
 cerebro.run()
